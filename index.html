@@ -210,6 +210,27 @@
         let participants = [];
         let expenses = [];
         let currentScreen = 'homeScreen';
+        let savedParticipants = [];
+
+        // Carregar participantes salvos ao iniciar
+        function loadSavedParticipants() {
+            const saved = JSON.parse(localStorage.getItem('savedParticipants') || '[]');
+            savedParticipants = saved;
+        }
+
+        // Salvar participante no cache
+        function saveParticipantToCache(name) {
+            if (!savedParticipants.includes(name)) {
+                savedParticipants.push(name);
+                localStorage.setItem('savedParticipants', JSON.stringify(savedParticipants));
+            }
+        }
+
+        // Inicializar ao carregar página
+        window.onload = function() {
+            loadSavedParticipants();
+            updateSavedParticipantsUI();
+        };
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -221,6 +242,7 @@
             participants = [];
             expenses = [];
             showScreen('participantsScreen');
+            updateSavedParticipantsUI();
         }
 
         function goToHome() {
