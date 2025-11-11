@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dividido 💸</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-pink-50 min-h-screen">
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-xl">
+        
+        <!-- Tela 1: Home -->
+        <div id="homeScreen" class="screen active p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-purple-600">Dividido 💸</h1>
+                <button onclick="showSettings()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="text-center mb-12">
+                <p class="text-xl text-gray-600 mb-8">Bora dividir essa conta? 🎉</p>
+                <button onclick="startNewRole()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                    ➕ Novo Rolê
+                </button>
+            </div>
+            
+            <div id="historySection" class="mt-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">📜 Histórico</h2>
+                <div id="historyList" class="space-y-3">
+                    <p class="text-gray-400 text-center py-8">Nenhum rolê ainda. Crie o primeiro!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela 2: Participantes -->
+        <div id="participantsScreen" class="screen p-6">
+            <div class="mb-6">
+                <button onclick="goToHome()" class="text-purple-600 flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Voltar
+                </button>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-purple-600 mb-6">👥 Quem tá no rolê?</h2>
+            
+            <div class="mb-6">
+                <input 
+                    type="text" 
+                    id="participantInput" 
+                    placeholder="Digite o nome"
+                    class="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-500"
+                    onkeypress="if(event.key==='Enter') addParticipant()"
+                >
+                <button onclick="addParticipant()" class="w-full mt-3 bg-purple-500 text-white py-3 rounded-lg font-semibold hover:bg-purple-600 transition">
+                    ➕ Adicionar participante
+                </button>
+            </div>
+            
+            <div id="participantsList" class="space-y-2 mb-6">
+            </div>
+            
+            <button onclick="goToExpenses()" id="advanceToExpenses" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                Avançar ✨
+            </button>
+        </div>
+
+        <!-- Tela 3: Gastos -->
+        <div id="expensesScreen" class="screen p-6">
+            <div class="mb-6">
+                <button onclick="goToParticipants()" class="text-purple-600 flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Voltar
+                </button>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-purple-600 mb-6">💵 Adicionar gastos</h2>
+            
+            <div class="space-y-4 mb-6">
+                <input 
+                    type="text" 
+                    id="expenseName" 
+                    placeholder="Nome do gasto (ex: Pizza)"
+                    class="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-500"
+                >
+                
+                <div class="relative">
+                    <span class="absolute left-4 top-3 text-gray-500 font-semibold">R$</span>
+                    <input 
+                        type="number" 
+                        id="expenseValue" 
+                        placeholder="0,00"
+                        step="0.01"
+                        class="w-full pl-12 pr-4 py-3 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-500"
+                    >
+                </div>
+                
+                <div class="border-2 border-purple-200 rounded-lg p-4">
+                    <p class="text-sm text-gray-600 mb-3">👥 Quem participou?</p>
+                    <div id="participantsCheckboxes" class="space-y-2">
+                    </div>
+                </div>
+                
+                <button onclick="addExpense()" class="w-full bg-purple-500 text-white py-3 rounded-lg font-semibold hover:bg-purple-600 transition">
+                    ➕ Adicionar gasto
+                </button>
+            </div>
+            
+            <div id="expensesList" class="space-y-3 mb-6">
+            </div>
+            
+            <button onclick="calculateDivision()" id="calculateBtn" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                📊 Calcular divisão
+            </button>
+        </div>
+
+        <!-- Tela 4: Resultado -->
+        <div id="resultScreen" class="screen p-6">
+            <h2 class="text-2xl font-bold text-purple-600 mb-6">📊 Resultado do Rolê</h2>
+            
+            <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 mb-6">
+                <p class="text-sm text-gray-600">Total do rolê</p>
+                <p class="text-3xl font-bold text-purple-700" id="totalAmount">R$ 0,00</p>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">💰 Quanto cada um pagou:</h3>
+                <div id="paidList" class="space-y-2">
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">🔄 Acerto de contas:</h3>
+                <div id="transactionsList" class="space-y-2">
+                </div>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="shareResult()" class="flex-1 bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition">
+                    📤 Compartilhar
+                </button>
+                <button onclick="resetApp()" class="flex-1 bg-purple-500 text-white py-3 rounded-lg font-semibold hover:bg-purple-600 transition">
+                    🔄 Novo Rolê
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela 5: Configurações -->
+        <div id="settingsScreen" class="screen p-6">
+            <div class="mb-6">
+                <button onclick="goToHome()" class="text-purple-600 flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Voltar
+                </button>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-purple-600 mb-6">⚙️ Configurações</h2>
+            
+            <div class="space-y-4">
+                <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                    <p class="font-semibold text-gray-700 mb-2">🌗 Modo escuro</p>
+                    <p class="text-sm text-gray-500">Em breve!</p>
+                </div>
+                
+                <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                    <p class="font-semibold text-gray-700 mb-2">💎 Versão Premium</p>
+                    <p class="text-sm text-gray-500 mb-3">Remove anúncios e desbloqueia recursos extras</p>
+                    <button class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg font-semibold text-sm">
+                        Upgrade agora
+                    </button>
+                </div>
+                
+                <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                    <p class="font-semibold text-gray-700 mb-2">📱 Sobre o app</p>
+                    <p class="text-sm text-gray-500">Dividido 💸 v1.0</p>
+                    <p class="text-sm text-gray-500">Criado para facilitar a divisão de gastos entre amigos!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let participants = [];
+        let expenses = [];
+        let currentScreen = 'homeScreen';
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active', 'fade-in');
+            currentScreen = screenId;
+        }
+
+        function startNewRole() {
+            participants = [];
+            expenses = [];
+            showScreen('participantsScreen');
+        }
+
+        function goToHome() {
+            showScreen('homeScreen');
+        }
+
+        function goToParticipants() {
+            showScreen('participantsScreen');
+        }
+
+        function showSettings() {
+            showScreen('settingsScreen');
+        }
+
+        function addParticipant() {
+            const input = document.getElementById('participantInput');
+            const name = input.value.trim();
+            
+            if (name) {
+                participants.push(name);
+                input.value = '';
+                updateParticipantsList();
+                updateAdvanceButton();
+            }
+        }
+
+        function removeParticipant(index) {
+            participants.splice(index, 1);
+            updateParticipantsList();
+            updateAdvanceButton();
+        }
+
+        function updateParticipantsList() {
+            const list = document.getElementById('participantsList');
+            list.innerHTML = participants.map((name, index) => `
+                <div class="flex items-center justify-between bg-purple-50 px-4 py-3 rounded-lg">
+                    <span class="font-medium text-gray-700">${name}</span>
+                    <button onclick="removeParticipant(${index})" class="text-red-500 hover:text-red-700">
+                        🗑️
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateAdvanceButton() {
+            document.getElementById('advanceToExpenses').disabled = participants.length === 0;
+        }
+
+        function goToExpenses() {
+            if (participants.length > 0) {
+                updateParticipantsCheckboxes();
+                showScreen('expensesScreen');
+            }
+        }
+
+        function updateParticipantsCheckboxes() {
+            const container = document.getElementById('participantsCheckboxes');
+            container.innerHTML = participants.map((name, index) => `
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" value="${index}" class="w-4 h-4 text-purple-600 rounded participant-checkbox" checked>
+                    <span class="text-gray-700">${name}</span>
+                </label>
+            `).join('');
+        }
+
+        function addExpense() {
+            const name = document.getElementById('expenseName').value.trim();
+            const value = parseFloat(document.getElementById('expenseValue').value);
+            const checkboxes = document.querySelectorAll('.participant-checkbox:checked');
+            const selectedParticipants = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            if (name && value > 0 && selectedParticipants.length > 0) {
+                expenses.push({
+                    name,
+                    value,
+                    participants: selectedParticipants
+                });
+                
+                document.getElementById('expenseName').value = '';
+                document.getElementById('expenseValue').value = '';
+                updateExpensesList();
+                updateCalculateButton();
+            } else {
+                alert('Preencha todos os campos e selecione pelo menos um participante!');
+            }
+        }
+
+        function removeExpense(index) {
+            expenses.splice(index, 1);
+            updateExpensesList();
+            updateCalculateButton();
+        }
+
+        function updateExpensesList() {
+            const list = document.getElementById('expensesList');
+            list.innerHTML = expenses.map((expense, index) => {
+                const participantNames = expense.participants.map(i => participants[i]).join(', ');
+                return `
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="font-semibold text-gray-800">${expense.name}</p>
+                                <p class="text-2xl font-bold text-purple-600">R$ ${expense.value.toFixed(2)}</p>
+                            </div>
+                            <button onclick="removeExpense(${index})" class="text-red-500 hover:text-red-700">
+                                🗑️
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-600">👥 ${participantNames}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateCalculateButton() {
+            document.getElementById('calculateBtn').disabled = expenses.length === 0;
+        }
+
+        function calculateDivision() {
+            const balances = new Array(participants.length).fill(0);
+            let total = 0;
+            
+            expenses.forEach(expense => {
+                const perPerson = expense.value / expense.participants.length;
+                total += expense.value;
+                expense.participants.forEach(index => {
+                    balances[index] -= perPerson;
+                });
+            });
+            
+            expenses.forEach(expense => {
+                expense.participants.forEach(index => {
+                    balances[index] += expense.value / expense.participants.length;
+                });
+            });
+            
+            const transactions = [];
+            const debtors = [];
+            const creditors = [];
+            
+            balances.forEach((balance, index) => {
+                if (balance < -0.01) {
+                    debtors.push({ index, amount: -balance });
+                } else if (balance > 0.01) {
+                    creditors.push({ index, amount: balance });
+                }
+            });
+            
+            let i = 0, j = 0;
+            while (i < debtors.length && j < creditors.length) {
+                const payment = Math.min(debtors[i].amount, creditors[j].amount);
+                
+                transactions.push({
+                    from: debtors[i].index,
+                    to: creditors[j].index,
+                    amount: payment
+                });
+                
+                debtors[i].amount -= payment;
+                creditors[j].amount -= payment;
+                
+                if (debtors[i].amount < 0.01) i++;
+                if (creditors[j].amount < 0.01) j++;
+            }
+            
+            displayResults(total, balances, transactions);
+            showScreen('resultScreen');
+        }
+
+        function displayResults(total, balances, transactions) {
+            document.getElementById('totalAmount').textContent = `R$ ${total.toFixed(2)}`;
+            
+            const paidList = document.getElementById('paidList');
+            const expensesByPerson = new Array(participants.length).fill(0);
+            
+            expenses.forEach(expense => {
+                const perPerson = expense.value / expense.participants.length;
+                expense.participants.forEach(index => {
+                    expensesByPerson[index] += perPerson;
+                });
+            });
+            
+            paidList.innerHTML = participants.map((name, index) => `
+                <div class="bg-purple-50 px-4 py-2 rounded-lg flex justify-between">
+                    <span class="font-medium">${name}</span>
+                    <span class="font-bold text-purple-600">R$ ${expensesByPerson[index].toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            const transactionsList = document.getElementById('transactionsList');
+            if (transactions.length === 0) {
+                transactionsList.innerHTML = '<p class="text-center text-gray-500 py-4">Tá tudo certo! Ninguém deve nada 🎉</p>';
+            } else {
+                transactionsList.innerHTML = transactions.map(t => `
+                    <div class="bg-green-50 px-4 py-3 rounded-lg border-l-4 border-green-500">
+                        <p class="font-medium text-gray-800">
+                            ${participants[t.from]} paga <span class="font-bold text-green-600">R$ ${t.amount.toFixed(2)}</span> para ${participants[t.to]}
+                        </p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function shareResult() {
+            const total = expenses.reduce((sum, e) => sum + e.value, 0);
+            const expensesByPerson = new Array(participants.length).fill(0);
+            
+            expenses.forEach(expense => {
+                const perPerson = expense.value / expense.participants.length;
+                expense.participants.forEach(index => {
+                    expensesByPerson[index] += perPerson;
+                });
+            });
+            
+            let text = '💸 Dividido - Resultado do Rolê\n\n';
+            participants.forEach((name, index) => {
+                text += `${name} pagou R$ ${expensesByPerson[index].toFixed(2)}\n`;
+            });
+            
+            const transactionsList = document.getElementById('transactionsList');
+            if (transactionsList.textContent.includes('Tá tudo certo')) {
+                text += '\n✅ Tá tudo certo! Ninguém deve nada 🎉';
+            } else {
+                text += '\n📋 Acerto de contas:\n';
+                text += transactionsList.textContent.replace(/R\$/g, 'R$').trim();
+            }
+            
+            text += '\n\n#DivididoApp';
+            
+            if (navigator.share) {
+                navigator.share({ text });
+            } else {
+                navigator.clipboard.writeText(text);
+                alert('Copiado para a área de transferência! 📋');
+            }
+        }
+
+        function resetApp() {
+            if (confirm('Começar um novo rolê? Os dados atuais serão perdidos.')) {
+                startNewRole();
+            }
+        }
+    </script>
+</body>
+</html>
